@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatRepositories {
-   private List<String> messages;
+   private final List<String> messages;
 
     public ChatRepositories() {
         this.messages = new ArrayList<>();
@@ -12,10 +12,6 @@ public class ChatRepositories {
 
     public List<String> getMessages() {
         return messages;
-    }
-
-    public void setMessagesMessages(List<String> messages) {
-        this.messages = messages;
     }
 
     public void addMessage (String message){

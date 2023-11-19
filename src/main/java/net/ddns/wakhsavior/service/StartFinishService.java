@@ -3,8 +3,6 @@ package net.ddns.wakhsavior.service;
 import net.ddns.wakhsavior.repositories.ChatRepositories;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class StartFinishService {
 
