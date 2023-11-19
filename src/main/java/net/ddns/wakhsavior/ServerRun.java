@@ -11,15 +11,18 @@ import java.awt.event.ActionListener;
 (имитировать запуск и остановку сервера, соответственно) и выставлять внутри интерфейса
 соответствующее булево isServerWorking.
  */
-public class ServerRun extends JFrame{
+public class ServerRun extends JFrame {
     private static final int WINDOW_HEIGHT = 555;
     private static final int WINDOW_WIDTH = 507;
     private static final int WINDOW_POSX = 800;
     private static final int WINDOW_POSY = 300;
     JButton btnStart = new JButton("Start Server");
     JButton btnStop = new JButton("Stop Server");
+    JPanel panel = new JPanel();
+    JTextArea textArea = new JTextArea();
     boolean isServerWorking;
-    ServerRun(){
+
+    ServerRun() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocation(WINDOW_POSX, WINDOW_POSY);
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -32,6 +35,7 @@ public class ServerRun extends JFrame{
                 if (!isServerWorking) {
                     isServerWorking = true;
                 }
+                textArea.setText("Статус сервера: " + isServerWorking);
                 System.out.println("Статус сервера: " + isServerWorking);
             }
         });
@@ -41,12 +45,15 @@ public class ServerRun extends JFrame{
                 if (isServerWorking) {
                     isServerWorking = false;
                 }
+                textArea.setText("Статус сервера: " + isServerWorking);
                 System.out.println("Статус сервера: " + isServerWorking);
             }
         });
-        setLayout(new GridLayout(1,2));
+        setLayout(new GridLayout(2, 2));
         add(btnStart);
         add(btnStop);
+        add(panel);
+        panel.add(textArea);
         setVisible(true);
     }
 

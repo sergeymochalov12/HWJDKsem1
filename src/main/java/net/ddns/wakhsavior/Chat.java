@@ -1,9 +1,11 @@
 package net.ddns.wakhsavior;
 
+import net.ddns.wakhsavior.repositories.ChatRepositories;
+import net.ddns.wakhsavior.service.StartFinishService;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 /*
 Создать окно клиента чата. Окно должно содержать JtextField для ввода логина, пароля,
@@ -13,7 +15,10 @@ IP-адреса сервера, порта подключения к серве�
 сверху экрана, а компоненты, относящиеся к отправке сообщения – на JPanel снизу
  */
 public class Chat extends JFrame{
-    private static final int WINDOW_HEIGHT = 400;
+
+    private final ChatRepositories chatRepositories;
+
+    private static final int WINDOW_HEIGHT = 600;
     private static final int WINDOW_WIDTH = 700;
     private static final int WINDOW_POSX = 800;
     private static final int WINDOW_POSY = 300;
@@ -27,13 +32,22 @@ public class Chat extends JFrame{
     JTextField txtFieldIP = new JTextField();
     JTextField txtFieldMessage = new JTextField();
     JTextArea areaMessage = new JTextArea();
+
     JPanel panServer = new JPanel(new GridLayout(6, 2));
     JPanel panClient = new JPanel(new GridLayout(4, 1));
     String login;
     String password;
     String IP;
     String message;
-    Chat(){
+    Chat(ChatRepositories chatRepositories,StartFinishService startFinishService){
+        this.chatRepositories = chatRepositories;
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                startFinishService.finish();
+                super.windowClosing(e);
+            }
+        });
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocation(WINDOW_POSX, WINDOW_POSY);
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -49,13 +63,21 @@ public class Chat extends JFrame{
         panClient.add(areaMessage);
         panClient.add(txtFieldMessage);
         panClient.add(btnSend);
-
+        for(String s: chatRepositories.getMessages()){
+            areaMessage.append(s + "\n");
+        }
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                message = txtFieldLogin.getText() + ": " + txtFieldMessage.getText() + "\n";
-                areaMessage.append(message);
-                System.out.println("Отправлено сообщение: " + message);
+             setMessage();
+            }
+        });
+        txtFieldMessage.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                   setMessage();
+                }
             }
         });
         setLayout(new GridLayout(2,1));
@@ -63,8 +85,18 @@ public class Chat extends JFrame{
         add(panClient);
         setVisible(true);
     }
+    public void setMessage (){
+        message = txtFieldLogin.getText() + ": " + txtFieldMessage.getText();
+        areaMessage.append(message + "\n");
+        chatRepositories.addMessage(message);
+
+    }
 
     public static void main(String[] args) {
-        new Chat();
+        ChatRepositories chatRepositories1 = new ChatRepositories();
+        StartFinishService startFinishService = new StartFinishService(chatRepositories1);
+        startFinishService.start();
+        new Chat(chatRepositories1,startFinishService);
+
     }
 }
